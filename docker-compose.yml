@@ -1,0 +1,38 @@
+services:
+  fastapi:
+    build: .
+    restart: always
+    depends_on:
+      - postgres_db
+    environment:
+      - DATABASE_URL=postgresql://postgres:Georgio#2024@host.docker.internal:5432/jobboard
+    ports:
+      - "8000:80"
+
+  pg_admin:
+    image: dpage/pgadmin4:latest
+    depends_on:
+      - postgres_db
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=SuperSecret
+    ports:
+      - "8888:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+  postgres_db:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Georgio#2024
+      - POSTGRES_DB=jobboard
+
+volumes:
+    postgres_data: 
+    pgadmin-data:
