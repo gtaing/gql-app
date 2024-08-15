@@ -1,29 +1,20 @@
-from graphene import Schema, ObjectType, List
-from fastapi import FastAPI
+from typing import Annotated
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Depends
 from starlette_graphene3 import GraphQLApp, make_playground_handler
 
-
-from app.entity import JobObject, EmployerObject
-from app.database import loading_data
-from app.data import jobs_data, employers_data
-
-
-class Query(ObjectType):
-    jobs = List(JobObject)
-    employers = List(EmployerObject)
-
-    @staticmethod
-    def resolve_jobs(root, info):
-        return jobs_data
-
-    @staticmethod
-    def resolve_employers(root, info):
-        return employers_data
+from app.db.database import prepare_db, get_session
+from app.db.models import Employer, Job
+from app.gql.query import schema
 
 
-schema = Schema(query=Query)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    prepare_db()
+    yield
 
-app = FastAPI()
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/")
@@ -31,8 +22,14 @@ def read_root():
     return {"Hello": "World"}
 
 
+@app.get("/employers")
+async def get_employers(session: Annotated[None, Depends(get_session)]):
+    return session.query(Employer).all()
+
+
+@app.get("/jobs")
+async def get_jobs(session: Annotated[None, Depends(get_session)]):
+    return session.query(Job).all()
+
+
 app.mount("/graphql", GraphQLApp(schema=schema, on_get=make_playground_handler()))
-
-
-# Loading data into DB
-loading_data()
