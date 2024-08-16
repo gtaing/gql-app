@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy import Integer, String, ForeignKey, Sequence
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.ext.declarative import declarative_base
@@ -10,7 +10,7 @@ Base = declarative_base()
 class Employer(Base):
     __tablename__ = "employers"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String)
     contact_email: Mapped[str] = mapped_column(String)
     industry: Mapped[str] = mapped_column(String)
@@ -23,7 +23,7 @@ class Employer(Base):
 class Job(Base):
     __tablename__ = "jobs"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String)
     description: Mapped[str] = mapped_column(String)
     employer_id: Mapped[int] = mapped_column(Integer, ForeignKey("employers.id"))

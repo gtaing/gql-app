@@ -5,9 +5,12 @@ from sqlalchemy.orm import sessionmaker
 from app.db.data import employers_data, jobs_data
 from app.db.models import Employer, Job, Base
 
-DB_URL = os.environ.get("DATABASE_URL")
+DB_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://postgres:Georgio#2024@host.docker.internal:5432/jobboard",
+)
 
-engine = create_engine(DB_URL)
+engine = create_engine(DB_URL, echo=True)
 
 Session = sessionmaker(engine)
 

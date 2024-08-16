@@ -3,7 +3,7 @@ from sqlalchemy.orm import joinedload
 
 from app.gql.type import JobObject, EmployerObject
 from app.db.models import Job, Employer
-from app.db.database import select_all_employers, select_all_jobs, Session
+from app.db.database import Session
 
 
 class Query(ObjectType):
